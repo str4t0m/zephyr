@@ -1,0 +1,85 @@
+# Copyright (c) 2021 Thomas Stranger
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig SCD4X
+	bool "SCD4X C02 Sensor"
+	depends on I2C && HAS_DTS_GPIO
+	help
+	  Enable driver for Sensirion SCD4X sensors.
+
+if SCD4X
+
+choice
+	prompt "Measurement Mode"
+	default SCD4X_MEASURE_PERIODIC_HPM
+	help
+	  Specify the measurement mode.
+
+config SCD4X_MEASURE_PERIODIC_HPM
+	bool "Periodic high performance measurement mode"
+	help
+	  low power mode measures continuously with update interval of 5s
+
+config SCD4X_MEASURE_PERIODIC_LPM
+	bool "Periodic low power measurement mode"
+	help
+	  low power mode measures continuously with update interval of 30s
+
+config SCD4X_MEASURE_SINGLE_SHOT
+	bool "Single shot measurement mode"
+	depends on ($(dt_node_has_bool_prop,scd41-62,single-shot-support)) || \
+		 ($(dt_node_has_bool_prop,scd4x-1,single-shot-support)) || \
+		 ($(dt_node_has_bool_prop,scd4x-2,single-shot-support)) || \
+		 ($(dt_node_has_bool_prop,i2c-0,scd41-62)) || \
+		 ($(dt_node_has_bool_prop,i2c-1,scd41-62)) || \
+		 y
+	help
+	  single shot mode measures only on-demand. TODO
+
+endchoice
+
+config SCD4X_MEASURE_MODE_RUNTIME_CHANGE
+	bool "Runtime measuremnt mode change"
+	help
+	  Enables possibility to change the measurement mode at runtime.
+	  Therefore the sensor attribute SENSOR_ATTR_SAMPLING_FREQUENCY for
+	  SENSOR_CHAN_ALL is used.
+	  The value 0.0Hz turns off periodic measurements, such that the sensor
+	  is usable in single shot mode(SCD41 only).
+	  Values greater than 0.033333Hz enable the HPM, which samples
+	  values at 5s interval.
+	  Positive vales smaller or equal 0.033333Hz enable the LPM,
+	  which samples at 30s interval.
+
+config SCD4X_FORCED_CALIBRATION_SUPPORT
+	bool "Forced calibration support"
+	help
+	  The SCD4x Sensor runs an automatic calibration in the background,
+	  which assumes that the sensor is exposed to the atmospheric
+	  CO2 concentration of 400 ppm at least once per week.
+
+	  Additionally a forced calibration method is provided via the
+	  sensor attribute interface:
+	  Using SENSOR_ATTR_CALIB_TARGET for SENSOR_CHAN_CO2 a CO2 reference
+	  value can be supplied for calibration. For successful calibration
+	  the Sensor must have operated in periodic mode for more than 3
+	  minutes before the initiation of the calibration.
+
+	  The special values 0.0 and 0.000001 can be used to disable and
+	  enable the automatic calibration at runtime.
+
+
+config SCD4X_FACTORY_RESET_AT_INIT
+	bool "Execute factory reset during initialization"
+	help
+	  Execute factory reset during driver initialization.
+	  This resets all configuration settings stored in the eeprom and erases
+	  the FRC and ASC algorithm history.
+
+config SCD4X_SELFTEST_AT_INIT
+	bool "Execute self-test during initialization"
+	help
+	  Execute self-test during driver initialization.
+	  Can be used as end-of-line test to confirm sensor functionality.
+
+endif # SCD4X

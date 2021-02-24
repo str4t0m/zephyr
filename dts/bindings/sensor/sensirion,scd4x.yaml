@@ -1,0 +1,16 @@
+# Copyright (c) 2021, Thomas Stranger
+# SPDX-License-Identifier: Apache-2.0
+
+description: Sensirion SCD4x CO2 sensor
+
+compatible: "sensirion,scd4x"
+
+include: i2c-device.yaml
+
+properties:
+    single-shot-support:
+      type: boolean
+      required: false
+      description: |
+        If the Sensor supports single shot measurements(SHT41 only).
+
