@@ -1,0 +1,12 @@
+sample:
+  name: SCD4x Sensor sample
+tests:
+  sample.sensor.scd4x:
+    harness: console
+    tags: sensors
+    platform_allow: i2c arduino_i2c
+    harness_config:
+        type: one_line
+        regex:
+            - "CO2: (.*); temp: (.*); humidity: (.*)"
+        fixture: fixture_i2c_scd4x

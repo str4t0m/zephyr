@@ -1,0 +1,88 @@
+# Copyright (c) 2021 Thomas Stranger
+# SPDX-License-Identifier: Apache-2.0
+
+config LOG
+	default y
+
+config LOG_PRINTK
+	default y
+
+config SENSOR_LOG_LEVEL
+	default 4
+
+menu "SCD4x sample application configuration"
+
+config APP_CALIBRATE_ENVIRONMENT
+	bool "Calibrate SCDx sensor environmental parameters"
+	select SCD4X_MEASURE_MODE_RUNTIME_CHANGE
+	default n
+
+config APP_TEMPERATURE_OFFSET
+	int "Temperature offset (in milli degrees Celsius)"
+	default 4000
+	depends on APP_CALIBRATE_ENVIRONMENT
+	help
+	  Temperature offset can be changed to compensate error due to
+	  self-heating.
+	  Temperature offset only has influence on RH and ambient temperature
+	  sensor channels' accuracy only, not on CO2.
+	  The offset depends on the measurement mode, self-heating, the ambient
+	  temperature, the air flow and the position of the sensor in the device.
+
+config APP_ALTITUDE
+	int "Sensor altitude (in m)"
+	default 0
+	depends on APP_CALIBRATE_ENVIRONMENT
+	help
+	  The altitude can be used for pressure comensation as an alternative
+	  to an ambient pressure value.
+
+config APP_FORCE_CO2_CALIBRATION
+	bool "Force CO2 calibration to defined reference value"
+	select SCD4X_MEASURE_MODE_RUNTIME_CHANGE
+	select SCD4X_FORCED_CALIBRATION_SUPPORT
+	default n
+	help
+	  Additionally to the automatic self calibration(ASC) calibrate the
+	  sensor to a reference value.
+	  Typically used to compensate drifts caused by extensive stress to
+	  the sensor or the assembly process.
+
+config APP_CO2_REFERENCE_VALUE
+	int "CO2 Reference value"
+	default 416
+	depends on APP_FORCE_CO2_CALIBRATION
+	help
+	  Reference value the sensor is calibrated to. The de-seasonilzed
+	  CO2 concentration during February 2021 was 416 ppm at
+	  Mauna Loa Observatory(https://www.esrl.noaa.gov/gmd/ccgg/trends/).
+
+config APP_CO2_CALIBRATION_STABILIZATION_TIME
+	int "CO2 Calibration stabilization time (in s)"
+	default 200
+	depends on APP_FORCE_CO2_CALIBRATION
+	help
+	  Time in seconds the app waits before executing the forced calibration.
+
+config APP_ENABLE_AUTO_SELF_CALIBRATION
+	bool "Enable automatic self-calibration"
+	default y
+	help
+	  The automatic self-calibration algorithm assumes that the sensor
+	  is exposed to atmospheric CO2 concentration of 400 ppm at least
+	  once per week.
+	  In applications where this is not the case better results can be
+	  achieved if the auto calibration is disabled.
+
+config APP_PERSIST_SETTINGS
+	bool "Persist Settings"
+	select SCD4X_MEASURE_MODE_RUNTIME_CHANGE
+	default n
+	help
+	  Permanently apply the configuration values.
+	  This should be enabled only if actual changes have been made,
+	  as the sensor guarantees only 2000 write cycles before failure.
+
+endmenu # "SCD4x sample application configuration"
+
+source "Kconfig.zephyr"

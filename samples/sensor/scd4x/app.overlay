@@ -1,0 +1,19 @@
+/*
+ * Copyright (c) 2021 Thomas Stranger
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * A SCD41 attached to the Arduino I2C pins
+ */
+
+&arduino_i2c {
+	SCD41@62 {
+		status = "okay";
+		compatible = "sensirion,scd4x";
+		reg = <0x62>;
+		single-shot-support;
+		label = "SCD41";
+	};
+};
