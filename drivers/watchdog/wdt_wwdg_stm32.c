@@ -43,6 +43,8 @@ LOG_MODULE_REGISTER(wdt_wwdg_stm32);
 #define WWDG_PRESCALER_EXPONENT_MAX 3 /* 2^3 = 8 */
 #endif
 
+#define WWDG_COUNTER_IS_VALID(x) (x >= WWDG_COUNTER_MIN && x <= WWDG_COUNTER_MAX)
+
 /* The timeout of the WWDG in milliseconds is calculated by the below formula:
  *
  * t_WWDG = 1000 * ((counter & 0x3F) + 1) / f_WWDG (ms)
@@ -78,7 +80,7 @@ LOG_MODULE_REGISTER(wdt_wwdg_stm32);
 
 #define ABS_DIFF_UINT(a, b)  ((a) > (b) ? (a) - (b) : (b) - (a))
 #define WWDG_TIMEOUT_ERROR_MARGIN(__TIMEOUT__)   (__TIMEOUT__ / 10)
-#define IS_WWDG_TIMEOUT(__TIMEOUT_GOLDEN__, __TIMEOUT__)  \
+#define WWDG_TIMEOUT_IS_VALID(__TIMEOUT_GOLDEN__, __TIMEOUT__)  \
 	(__TIMEOUT__ - __TIMEOUT_GOLDEN__) < \
 	WWDG_TIMEOUT_ERROR_MARGIN(__TIMEOUT_GOLDEN__)
 
@@ -213,8 +215,8 @@ static int wwdg_stm32_install_timeout(const struct device *dev,
 	LOG_DBG("Desired WDT: %d us", timeout);
 	LOG_DBG("Set WDT:     %d us", calculated_timeout);
 
-	if (!(IS_WWDG_COUNTER(counter) &&
-	      IS_WWDG_TIMEOUT(timeout, calculated_timeout))) {
+	if (!(WWDG_COUNTER_IS_VALID(counter) &&
+	      WWDG_TIMEOUT_IS_VALID(timeout, calculated_timeout))) {
 		/* One of the parameters provided is invalid */
 		return -EINVAL;
 	}
