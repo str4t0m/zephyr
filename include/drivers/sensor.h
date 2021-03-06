@@ -296,6 +296,12 @@ enum sensor_attribute {
 	SENSOR_ATTR_CALIB_TARGET,
 
 	/**
+	 * Sensor attributes might be stored only in volatile memory,
+	 * using config persist they can be applied permanently.
+	 */
+	SENSOR_ATTR_CONFIG_PERSIST,
+
+	/**
 	 * Number of all common sensor attributes.
 	 */
 	SENSOR_ATTR_COMMON_COUNT,
