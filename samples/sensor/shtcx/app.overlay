@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) 2021 Thomas Stranger
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * A shtc3 attached to the Arduino I2C pins
+ */
+
+&arduino_i2c {
+	clock-frequency = <I2C_BITRATE_FAST>;
+
+	SHTC3@70 {
+		status = "okay";
+		compatible = "sensirion,shtcx";
+		reg = <0x70>;
+		label = "SHTC3";
+
+		/* if you use a SHTC1 or SHTW1 change the chip to "shtc1" */
+		chip = "shtc3";
+		clock-stretching;
+	};
+};

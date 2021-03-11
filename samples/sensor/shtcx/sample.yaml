@@ -1,0 +1,11 @@
+sample:
+  name: Sensirion SHTCx Humidity/Temperature Sensor
+tests:
+  sample.sensor.shtcx:
+    harness: sensor
+    platform_allow: i2c arduino_i2c
+    harness_config:
+        type: one_line
+        regex:
+            - "Temp = (.*) C, RH = (.*)"
+        fixture: fixture_i2c_shtcx
