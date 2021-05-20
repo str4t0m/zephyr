@@ -24,6 +24,8 @@
 #include <pinmux/stm32/pinmux_stm32.h>
 #include <drivers/clock_control.h>
 
+#include <shared_irq.h>
+
 #ifdef CONFIG_UART_ASYNC_API
 #include <dt-bindings/dma/stm32_dma.h>
 #include <drivers/dma.h>
@@ -1526,7 +1528,8 @@ static int uart_stm32_pm_control(const struct device *dev,
 	static void uart_stm32_irq_config_func_##index(const struct device *dev)
 #define STM32_UART_IRQ_HANDLER_FUNC(index)				\
 	.irq_config_func = uart_stm32_irq_config_func_##index,
-#define STM32_UART_IRQ_HANDLER(index)					\
+
+#define STM32_UART_IRQ_CONFIG_FUNC(index)					\
 static void uart_stm32_irq_config_func_##index(const struct device *dev)	\
 {									\
 	IRQ_CONNECT(DT_INST_IRQN(index),				\
@@ -1535,10 +1538,27 @@ static void uart_stm32_irq_config_func_##index(const struct device *dev)	\
 		0);							\
 	irq_enable(DT_INST_IRQN(index));				\
 }
+
+#define STM32_UART_SHARED_IRQ_CONFIG_FUNC(index)			       \
+static void uart_stm32_irq_config_func_##index(const struct device *dev)       \
+{									       \
+	const struct device *shared_irq_dev;				       \
+									       \
+	shared_irq_dev = DEVICE_DT_GET(DT_INST_PHANDLE(index, shared_irq));    \
+	__ASSERT(device_is_ready(shared_irq_dev), "shared irq is not ready");  \
+	shared_irq_isr_register(shared_irq_dev, (isr_t)uart_stm32_isr, dev);   \
+	shared_irq_enable(shared_irq_dev, dev);				       \
+}
+
+#define STM32_UART_CONFIG_FUNC(index)					\
+	COND_CODE_1(DT_INST_PROP_HAS_IDX(index, shared_irq, 0),		\
+		    (STM32_UART_SHARED_IRQ_CONFIG_FUNC(index)),		\
+		    (STM32_UART_IRQ_CONFIG_FUNC(index)))
+
 #else
 #define STM32_UART_IRQ_HANDLER_DECL(index)
 #define STM32_UART_IRQ_HANDLER_FUNC(index)
-#define STM32_UART_IRQ_HANDLER(index)
+#define STM32_UART_IRQ_CONFIG_FUNC(index)
 #endif
 
 #ifdef CONFIG_UART_ASYNC_API
@@ -1585,7 +1605,6 @@ DEVICE_DT_INST_DEFINE(index,						\
 		    &uart_stm32_data_##index, &uart_stm32_cfg_##index,	\
 		    PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEVICE,	\
 		    &uart_stm32_driver_api);				\
-									\
-STM32_UART_IRQ_HANDLER(index)
+STM32_UART_CONFIG_FUNC(index)
 
 DT_INST_FOREACH_STATUS_OKAY(STM32_UART_INIT)

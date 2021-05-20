@@ -11,6 +11,16 @@ properties:
     interrupts:
       required: true
 
+    shared-irq:
+        type: phandle
+        required: false
+        description: |
+          In case of interrupt conflict a shared interrupt controller can
+          be specified which dispaches to all consumers.
+          When the shared-irq phandle is defined, it will be automatically
+          used insted of the direct interrupt defined in interrupts
+          property.
+
     parity:
       required: false
       type: int
