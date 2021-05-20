@@ -179,7 +179,7 @@ void shared_irq_config_func_##n(void)					\
 	DEVICE_DT_INST_DEFINE(n, shared_irq_initialize,			\
 			      NULL,					\
 			      &shared_irq_data_##n,			\
-			      &shared_irq_config_##n, POST_KERNEL,	\
+			      &shared_irq_config_##n, PRE_KERNEL_1,	\
 			      CONFIG_SHARED_IRQ_INIT_PRIORITY,		\
 			      &api_funcs);
 
