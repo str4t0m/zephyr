@@ -14,3 +14,46 @@ properties:
 
         For example the can1 would be
            pinctrl-0 = <&fdcan1_rx_pa11 &fdcan1_tx_pa12>;
+
+    shared-irq:
+        type: phandles
+        required: false
+        description: |
+          In case of interrupt conflicts shared interrupt controllers can
+          be specified which dispach to all consumers.
+          When shared-irq phandles are defined, they will be automatically
+          used insted of the direct interrupt defined in interrupts property.
+
+          example overlay for stm32g0b1
+
+          / {
+              soc {
+                  shared_irq21: shared_irq21 {
+                      compatible = "shared-irq";
+                      interrupt-controller;
+                      #interrupt-cells = <2>;
+                      interrupts = <21 0>;
+                      interrupt-names = "tim16_fdcan_it0";
+                      label = "SHARED_IRQ_21";
+                      status = "okay";
+                  };
+
+                  shared_irq22: shared_irq22 {
+                      compatible = "shared-irq";
+                      interrupt-controller;
+                      #interrupt-cells = <2>;
+                      interrupts = <22 0>;
+                      interrupt-names = "tim17_fdcan_it1";
+                      label = "SHARED_IRQ_22";
+                      status = "okay";
+                  };
+              };
+          };
+
+          &can1 {
+              shared-irq = <&shared_irq21 &shared_irq22>;
+          };
+
+          &can2 {
+              shared-irq = <&shared_irq21 &shared_irq22>;
+          };

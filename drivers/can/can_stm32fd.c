@@ -10,6 +10,7 @@
 #include <stm32_ll_rcc.h>
 #include "can_stm32fd.h"
 #include <pinmux/stm32/pinmux_stm32.h>
+#include <shared_irq.h>
 
 #include <logging/log.h>
 LOG_MODULE_DECLARE(can_driver, CONFIG_CAN_LOG_LEVEL);
@@ -222,6 +223,34 @@ static void config_can_##inst##_irq(void)                                      \
 	irq_enable(DT_INST_IRQ_BY_NAME(inst, line_1, irq));                    \
 }
 
+#define CAN_STM32FD_SHARED_IRQ_CFG_FUNCTION(inst)                              \
+static void config_can_##inst##_irq(void)                                      \
+{                                                                              \
+	LOG_DBG("Enabled CAN" #inst " shared IRQ");                            \
+	const struct device *can_dev = DEVICE_DT_INST_GET(inst);               \
+	const struct device *shared_irq_l0_dev;                                \
+	const struct device *shared_irq_l1_dev;                                \
+                                                                               \
+	shared_irq_l0_dev =                                                    \
+		DEVICE_DT_GET(DT_INST_PHANDLE_BY_IDX(inst, shared_irq, 0));    \
+	__ASSERT(device_is_ready(shared_irq_l0_dev), "shared irq0 not ready"); \
+	shared_irq_isr_register(shared_irq_l0_dev,                             \
+				(isr_t)can_stm32fd_line_0_isr, can_dev);       \
+	shared_irq_enable(shared_irq_l0_dev, can_dev);                         \
+                                                                               \
+	shared_irq_l1_dev =                                                    \
+		DEVICE_DT_GET(DT_INST_PHANDLE_BY_IDX(inst, shared_irq, 1));    \
+	__ASSERT(device_is_ready(shared_irq_l1_dev), "shared irq1 not ready"); \
+	shared_irq_isr_register(shared_irq_l1_dev,                             \
+				(isr_t)can_stm32fd_line_1_isr, can_dev);       \
+	shared_irq_enable(shared_irq_l1_dev, can_dev);                         \
+}
+
+#define CAN_STM32FD_CFG_FUNC(inst)                                            \
+	COND_CODE_1(DT_INST_PROP_HAS_IDX(inst, shared_irq, 0),                \
+		    (CAN_STM32FD_SHARED_IRQ_CFG_FUNCTION(inst)),              \
+		    (CAN_STM32FD_IRQ_CFG_FUNCTION(inst)))
+
 #ifdef CONFIG_CAN_FD_MODE
 
 #define CAN_STM32FD_CFG_INST(inst)                                             \
@@ -283,7 +312,7 @@ DEVICE_DT_INST_DEFINE(inst, &can_stm32fd_init, NULL,                           \
 		      &can_api_funcs);
 
 #define CAN_STM32FD_INST(inst)     \
-CAN_STM32FD_IRQ_CFG_FUNCTION(inst) \
+CAN_STM32FD_CFG_FUNC(inst)         \
 CAN_STM32FD_CFG_INST(inst)         \
 CAN_STM32FD_DATA_INST(inst)        \
 CAN_STM32FD_DEVICE_INST(inst)

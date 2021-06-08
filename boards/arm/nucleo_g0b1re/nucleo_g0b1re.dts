@@ -43,6 +43,29 @@
 		led0 = &green_led_1;
 		sw0 = &user_button;
 	};
+
+
+	soc {
+		shared_irq21: shared_irq21 {
+			compatible = "shared-irq";
+			interrupt-controller;
+			#interrupt-cells = <2>;
+			interrupts = <21 0>;
+			interrupt-names = "tim16_fdcan_it0";
+			label = "SHARED_IRQ_21";
+			status = "okay";
+		};
+
+		shared_irq22: shared_irq22 {
+			compatible = "shared-irq";
+			interrupt-controller;
+			#interrupt-cells = <2>;
+			interrupts = <22 0>;
+			interrupt-names = "tim17_fdcan_it1";
+			label = "SHARED_IRQ_22";
+			status = "okay";
+		};
+	};
 };
 
 &clk_hsi {
@@ -128,8 +151,22 @@
 	pinctrl-0 = <&dac1_out1_pa4>;
 };
 
+
 &can1 {
 	pinctrl-0 = <&fdcan1_rx_pa11 &fdcan1_tx_pa12>;
+	shared-irq = <&shared_irq21 &shared_irq22>;
+	bus-speed = <125000>;
+	sjw = <1>;
+	sample-point = <875>;
+	bus-speed-data = <1000000>;
+	sjw-data = <1>;
+	sample-point-data = <875>;
+	status = "okay";
+};
+
+&can2 {
+	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
+	shared-irq = <&shared_irq21 &shared_irq22>;
 	bus-speed = <125000>;
 	sjw = <1>;
 	sample-point = <875>;
