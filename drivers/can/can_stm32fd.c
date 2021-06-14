@@ -10,6 +10,7 @@
 #include <stm32_ll_rcc.h>
 #include "can_stm32fd.h"
 #include <pinmux/pinmux_stm32.h>
+#include <shared_irq.h>
 
 #include <logging/log.h>
 LOG_MODULE_DECLARE(can_driver, CONFIG_CAN_LOG_LEVEL);
@@ -208,18 +209,24 @@ static const struct can_driver_api can_api_funcs = {
 #endif
 };
 
+/*
+ * If a shared-irq with a matching name exists, use the shared irq driver,
+ * otherwise connect to noraml IRQ.
+ */
 #define CAN_STM32FD_IRQ_CFG_FUNCTION(inst)                                     \
 static void config_can_##inst##_irq(void)                                      \
 {                                                                              \
 	LOG_DBG("Enable CAN" #inst " IRQ");                                    \
-	IRQ_CONNECT(DT_INST_IRQ_BY_NAME(inst, line_0, irq),                    \
-		    DT_INST_IRQ_BY_NAME(inst, line_0, priority),               \
-		    can_stm32fd_line_0_isr, DEVICE_DT_INST_GET(inst), 0);      \
-	irq_enable(DT_INST_IRQ_BY_NAME(inst, line_0, irq));                    \
-	IRQ_CONNECT(DT_INST_IRQ_BY_NAME(inst, line_1, irq),                    \
-		    DT_INST_IRQ_BY_NAME(inst, line_1, priority),               \
-		    can_stm32fd_line_1_isr, DEVICE_DT_INST_GET(inst), 0);      \
-	irq_enable(DT_INST_IRQ_BY_NAME(inst, line_1, irq));                    \
+	SHARED_IRQ_INST_CONNECT_IRQ_BY_NAME_COND(inst, line_0,                 \
+						 can_stm32fd_line_0_isr,       \
+						 DEVICE_DT_INST_GET(inst),     \
+						 0);                           \
+	SHARED_IRQ_INST_CONNECT_IRQ_BY_NAME_COND(inst, line_1,                 \
+						 can_stm32fd_line_1_isr,       \
+						 DEVICE_DT_INST_GET(inst),     \
+						 0);                           \
+	SHARED_IRQ_INST_ENABLE_BY_NAME_COND(inst, line_0);                     \
+	SHARED_IRQ_INST_ENABLE_BY_NAME_COND(inst, line_1);                     \
 }
 
 #ifdef CONFIG_CAN_FD_MODE
