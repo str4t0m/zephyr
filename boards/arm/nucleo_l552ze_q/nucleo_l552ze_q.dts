@@ -5,6 +5,7 @@
  */
 
 /dts-v1/;
+#include <st/l5/stm32l552Xe.dtsi>
 #include "nucleo_l552ze_q-common.dtsi"
 
 / {

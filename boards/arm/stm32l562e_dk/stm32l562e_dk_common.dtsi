@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <st/l5/stm32l562Xe.dtsi>
 #include <st/l5/stm32l562qeixq-pinctrl.dtsi>
 #include "arduino_r3_connector.dtsi"
+
+/* could include some chosen nodes */
 
 / {
 	leds {
@@ -80,6 +81,7 @@
 };
 
 &usart1 {
+	pinctrl-0 = <&usart1_tx_pa9 &usart1_rx_pa10>; /* TODO remove */
 	current-speed = <115200>;
 	status = "okay";
 };

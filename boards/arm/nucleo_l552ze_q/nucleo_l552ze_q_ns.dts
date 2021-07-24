@@ -5,6 +5,7 @@
  */
 
 /dts-v1/;
+#include <st/l5/stm32l552Xe_ns.dtsi>
 #include "nucleo_l552ze_q-common.dtsi"
 
 / {
@@ -28,6 +29,7 @@
 };
 
 &lpuart1 {
+	pinctrl-0 = <&lpuart1_tx_pg7 &lpuart1_rx_pg8>; /* TODO remove */
 	current-speed = <115200>;
 	status = "okay";
 };

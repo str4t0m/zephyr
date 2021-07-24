@@ -5,6 +5,7 @@
  */
 
 /dts-v1/;
+#include <st/l5/stm32l562Xe_ns.dtsi>
 #include "stm32l562e_dk_common.dtsi"
 
 / {
