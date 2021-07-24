@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2021 Thomas Stranger
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&peripheral {
+		aes: aes@20c0000 {
+		compatible = "st,stm32-aes";
+		reg = <0x20c0000 0x400>;
+		clocks = <&rcc STM32_CLOCK_BUS_AHB2 0x00010000>;
+		interrupts = <93 0>;
+		status = "disabled";
+		label = "AES";
+	};
+};
