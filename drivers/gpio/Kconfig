@@ -39,6 +39,8 @@ config GPIO_GET_DIRECTION
 
 source "drivers/gpio/Kconfig.b91"
 
+source "drivers/gpio/Kconfig.ds2413"
+
 source "drivers/gpio/Kconfig.dw"
 
 source "drivers/gpio/Kconfig.pca95xx"

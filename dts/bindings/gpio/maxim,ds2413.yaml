@@ -1,0 +1,20 @@
+# Copyright (c) 2021, Thomas Stranger
+# SPDX-License-Identifier: Apache-2.0
+
+# Dual channel 1-wire open-drain I/O.
+# Up to 20mA sink current and 28V off-state operating voltage
+# Communication in normal and overdrive speed.
+
+description: Maxim 1-Wire Dual Channel Addressable Switch
+
+compatible: "maxim,ds2413"
+
+include: w1-slave.yaml
+
+# properties:
+    # resolution:
+    #   type: int
+    #   required: true
+    #   description: |
+    #       Resolution of the temperature reading in bit.
+    #       Valid configurations are from 9 to 12 bits.
