@@ -1060,4 +1060,8 @@ test_i2c_lm95234: lm95234@8f {
 	compatible = "national,lm95234";
 	reg = <0x8f>;
 	status = "okay";
+
+test_i2c_sht21@90 {
+	compatible = "sensirion,sht21";
+	reg = <0x90>;
 };
