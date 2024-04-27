@@ -75,6 +75,14 @@ enum sensor_channel {
 	SENSOR_CHAN_GYRO_Z,
 	/** Angular velocity around the X, Y and Z axes. */
 	SENSOR_CHAN_GYRO_XYZ,
+	/** Angular position about the roll axis, in radians. */
+	SENSOR_CHAN_ANG_POS_X,
+	/** Angular position about the pitch axis, in radians. */
+	SENSOR_CHAN_ANG_POS_Y,
+	/** Angular position about the yaw axis, in radians. */
+	SENSOR_CHAN_ANG_POS_Z,
+	/** Angular position about the X, Y, and Z axis. */
+	SENSOR_CHAN_ANG_POS_XYZ,
 	/** Magnetic field on the X axis, in Gauss. */
 	SENSOR_CHAN_MAGN_X,
 	/** Magnetic field on the Y axis, in Gauss. */
