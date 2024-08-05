@@ -211,6 +211,13 @@ config HWINFO_AMBIQ
 	help
 	  Enable AMBIQ hwinfo driver
 
+config HWINFO_NATIVE_LINUX
+	bool "Native Linux hwinfo"
+	default y
+	depends on ARCH_POSIX
+	help
+	  Enable Native Linux hwinfo driver
+
 config HWINFO_NUMAKER
 	bool "NuMaker hwinfo"
 	default y
