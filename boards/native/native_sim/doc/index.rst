@@ -471,6 +471,11 @@ The following peripherals are currently provided with this board:
   The flash content can be accessed from the host system, as explained in the
   `Host based flash access`_ section.
 
+**Hardware Information**
+  The Native Linux Hardware Information driver can provide a unique identifier
+  of the host via ``hwinfo_get_device_id``, provied such an id is stored in
+  either ``/var/lib/dbus/machine-id`` or ``/etc/machine-id``.
+
 **Input events**
   Two optional native input drivers are available:
 
@@ -710,6 +715,7 @@ host libC (:kconfig:option:`CONFIG_EXTERNAL_LIBC`):
      Flash, :ref:`Host based flash access <native_fuse_flash>`, :kconfig:option:`CONFIG_FUSE_FS_ACCESS`, Host libC
      GPIO, GPIO emulator, :kconfig:option:`CONFIG_GPIO_EMUL`, All
      GPIO, SDL GPIO emulator, :kconfig:option:`CONFIG_GPIO_EMUL_SDL`, All
+     HWINFO, HWINFO native linux, :kconfig:option:`CONFIG_HWINFO_NATIVE_LINUX`, All
      I2C, I2C emulator, :kconfig:option:`CONFIG_I2C_EMUL`, All
      Input, Input SDL touch, :kconfig:option:`CONFIG_INPUT_SDL_TOUCH`, All
      Input, Linux evdev, :kconfig:option:`CONFIG_NATIVE_LINUX_EVDEV`, All
