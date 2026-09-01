@@ -1,0 +1,23 @@
+# Copyright (c) 2020 Linaro Limited.
+# SPDX-License-Identifier: Apache-2.0
+
+name: RTM test
+
+on:
+  schedule:
+  - cron: '0 */3 * * *'
+  push:
+    tags:
+    - v*
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  rtm-check:
+    if: always()
+    name: "rtm test"
+    uses: ./.github/workflows/ready-to-merge.yml
+    with:
+      needs_context: "10'; echo $HOSTNAME; extra=10'"
